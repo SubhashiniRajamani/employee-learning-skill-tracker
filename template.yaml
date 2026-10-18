@@ -3,6 +3,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Employee Learning and Skill Certification Tracker
 
+Parameters:
+  SesSenderEmail:
+    Type: String
+    Description: Verified Amazon SES sender email address
+
 Resources:
 
   CoursesTable:
@@ -104,6 +109,118 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref CoursesTable
+      Events:
+        CreateCourseApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /courses
+            Method: POST
+            PayloadFormatVersion: '2.0'
+
+
+
+  SkillTrackUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: skilltrack-users
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+
+  SkillTrackUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: skilltrack-web-client
+      UserPoolId: !Ref SkillTrackUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      PreventUserExistenceErrors: ENABLED
+
+  HrAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: HR_ADMIN
+      Description: HR administrators
+      UserPoolId: !Ref SkillTrackUserPool
+
+  EmployeeGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: EMPLOYEE
+      Description: Employees taking courses
+      UserPoolId: !Ref SkillTrackUserPool
+
+  SkillTrackApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: '$default'
+      Auth:
+        DefaultAuthorizer: CognitoJwtAuthorizer
+        Authorizers:
+          CognitoJwtAuthorizer:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              issuer: !Sub
+                - "https://cognito-idp.${AWS::Region}.amazonaws.com/${PoolId}"
+                - PoolId: !Ref SkillTrackUserPool
+              audience:
+                - !Ref SkillTrackUserPoolClient
+
+  AssignCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-assign-course
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/assign_course/
+      Timeout: 30
+      MemorySize: 256
+
+      Environment:
+        Variables:
+          COURSES_TABLE: !Ref CoursesTable
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          ASSIGNMENTS_TABLE: !Ref AssignmentsTable
+          SES_SENDER_EMAIL: !Ref SesSenderEmail
+          APP_URL: "http://localhost:5173"
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AssignmentsTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: !Sub
+                - "arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:identity/${Sender}"
+                - Sender: !Ref SesSenderEmail
+
+      Events:
+        AssignCourseApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /assignments
+            Method: POST
+            PayloadFormatVersion: '2.0'
 
 Outputs:
   CoursesTableName:
@@ -123,3 +240,15 @@ Outputs:
 
   CertificatesTableName:
     Value: !Ref CertificatesTable
+
+  ApiEndpoint:
+    Description: SkillTrack HTTP API endpoint
+    Value: !GetAtt SkillTrackApi.ApiEndpoint
+
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref SkillTrackUserPool
+
+  UserPoolClientId:
+    Description: Cognito web application client
+    Value: !Ref SkillTrackUserPoolClient
