@@ -1,0 +1,125 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Employee Learning and Skill Certification Tracker
+
+Resources:
+
+  CoursesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: skilltrack-courses
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: course_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: course_id
+          KeyType: HASH
+
+  EmployeesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: skilltrack-employees
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: employee_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: employee_id
+          KeyType: HASH
+
+  QuizzesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: skilltrack-quizzes
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: course_id
+          AttributeType: S
+        - AttributeName: question_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: course_id
+          KeyType: HASH
+        - AttributeName: question_id
+          KeyType: RANGE
+
+  AssignmentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: skilltrack-assignments
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: employee_id
+          AttributeType: S
+        - AttributeName: course_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: employee_id
+          KeyType: HASH
+        - AttributeName: course_id
+          KeyType: RANGE
+
+  CompletionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: skilltrack-completions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: employee_id
+          AttributeType: S
+        - AttributeName: course_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: employee_id
+          KeyType: HASH
+        - AttributeName: course_id
+          KeyType: RANGE
+
+  CertificatesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: skilltrack-certificates
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: certificate_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: certificate_id
+          KeyType: HASH
+
+  CreateCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-create-course
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/create_course/
+      Timeout: 10
+      MemorySize: 128
+      Environment:
+        Variables:
+          COURSES_TABLE: !Ref CoursesTable
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref CoursesTable
+
+Outputs:
+  CoursesTableName:
+    Value: !Ref CoursesTable
+
+  EmployeesTableName:
+    Value: !Ref EmployeesTable
+
+  QuizzesTableName:
+    Value: !Ref QuizzesTable
+
+  AssignmentsTableName:
+    Value: !Ref AssignmentsTable
+
+  CompletionsTableName:
+    Value: !Ref CompletionsTable
+
+  CertificatesTableName:
+    Value: !Ref CertificatesTable
