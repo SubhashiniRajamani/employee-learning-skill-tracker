@@ -5,7 +5,12 @@ A serverless Learning Management System (LMS) built using AWS, Python, React, an
 
 SkillTrack enables HR administrators to create training courses, assign learning activities, manage quizzes, track employee progress, and monitor skill completion. Employees can watch training videos, complete quizzes, and download verifiable PDF certificates after passing.
 
-## Features
+![AWS](https://img.shields.io/badge/AWS-Serverless-FF9900?logo=amazonwebservices&logoColor=white)
+![React](https://img.shields.io/badge/React-TypeScript-149ECA?logo=react&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
+![DynamoDB](https://img.shields.io/badge/Database-DynamoDB-4053D6?logo=amazondynamodb&logoColor=white)
+![License](https://img.shields.io/badge/Project-Academic-blue)
+![Status](https://img.shields.io/badge/Status-Core%20Features%20Implemented-brightgreen)
 
 ### HR Administrator
 
@@ -288,6 +293,6 @@ employee-learning-skill-tracker/
 
 Subhashini Rajamani
 
-## Project Status
+### 2. Install Frontend Dependencies
 
 Core application implemented and tested with demonstration data. AWS infrastructure deployed using AWS SAM.
