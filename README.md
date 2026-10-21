@@ -4,23 +4,26 @@
 # 🎓 SkillTrack
 ### Employee Learning & Skill Certification Tracker
 
-**A cloud-native, serverless Learning Management System built on AWS**
+**A cloud-native, serverless Learning Management System built using React, Python and AWS**
 
-Learn • Assess • Certify • Grow
+**Learn • Assess • Certify • Grow**
 
-![AWS](https://img.shields.io/badge/AWS-Serverless-FF9900?logo=amazonwebservices&logoColor=white)
-![React](https://img.shields.io/badge/React-TypeScript-149ECA?logo=react&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
-![DynamoDB](https://img.shields.io/badge/Database-DynamoDB-4053D6?logo=amazondynamodb&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Core_Features_Implemented-brightgreen)
+[![AWS](https://img.shields.io/badge/AWS-Serverless-FF9900?logo=amazonwebservices&logoColor=white)](https://aws.amazon.com/)
+[![React](https://img.shields.io/badge/React-TypeScript-149ECA?logo=react&logoColor=white)](https://react.dev/)
+[![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![DynamoDB](https://img.shields.io/badge/Database-DynamoDB-4053D6?logo=amazondynamodb&logoColor=white)](https://aws.amazon.com/dynamodb/)
+[![Amplify](https://img.shields.io/badge/Frontend-AWS_Amplify-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/amplify/)
+[![GitHub Actions](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/SubhashiniRajamani/employee-learning-skill-tracker/actions)
 
-[🚀 Features](#-key-features) •
-[🏗 Architecture](#-system-architecture) •
-[🛠 Tech Stack](#-technology-stack) •
-[📸 Screenshots](#-application-screenshots) •
-[🌐 APIs](#-api-reference) •
-[⚙️ Setup](#️-getting-started)
+### 🌐 Live Application
+
+[![Launch SkillTrack](https://img.shields.io/badge/🚀_Launch_SkillTrack-Live_Website-16A34A?style=for-the-badge)](https://master.da06iuy3xqk98.amplifyapp.com)
+
+**🔗 https://master.da06iuy3xqk98.amplifyapp.com**
+
+*Publicly hosted on AWS Amplify with HTTPS. Application dashboards require Amazon Cognito authentication.*
+
+**[Features](#-key-features) · [Architecture](#-system-architecture) · [Screenshots](#-application-screenshots) · [APIs](#-api-reference) · [Installation](#-getting-started) · [Demo](#-demonstration-guide)**
 
 </div>
 
@@ -28,25 +31,29 @@ Learn • Assess • Certify • Grow
 
 ## 📖 Project Overview
 
-**SkillTrack** is a serverless employee learning and skill certification platform that digitizes corporate training.
+**SkillTrack** is a serverless employee learning, training management and skill certification platform.
 
-The platform provides separate portals for HR administrators and employees. HR can create training courses, assign learning activities, manage assessments, monitor progress, and identify overdue training.
+It allows organizations to manage corporate learning through two dedicated portals:
 
-Employees can access assigned courses, learn through external training videos, complete MCQ assessments, and download PDF certificates after successfully passing.
+- **HR Administrator Portal:** Create courses, assign training, add quizzes, monitor employees and track skills.
+- **Employee Portal:** Access assigned training, take MCQ assessments, view results and download completion certificates.
 
-The backend is implemented using AWS Lambda and Amazon API Gateway, with Amazon DynamoDB for application records, Amazon Cognito for authentication, and Amazon S3 for private certificate storage.
+The solution uses a React and TypeScript frontend publicly hosted on **AWS Amplify Hosting**, with a Python backend running on **AWS Lambda** behind **Amazon API Gateway**.
+
+Amazon Cognito manages authentication, DynamoDB stores application records, Amazon S3 stores PDF certificates, and SES/SNS manage notifications.
 
 ### 🎯 Project Objectives
 
-- Centralize employee training management.
-- Automate course assignments and notifications.
-- Provide secure, role-based access.
-- Evaluate employees using server-graded quizzes.
-- Enforce quiz attempt limits.
-- Automatically generate verifiable certificates.
-- Measure department-level training completion.
-- Identify overdue training and notify HR.
-- Reduce infrastructure management using AWS serverless services.
+- Digitize corporate training management.
+- Support HR and employee role-based access.
+- Automate training assignments and email notifications.
+- Evaluate employees with secure MCQ assessments.
+- Enforce a maximum of three quiz attempts.
+- Generate unique, verifiable PDF certificates.
+- Monitor training progress and department-level skills.
+- Notify HR about overdue learning activities.
+- Use a scalable AWS serverless architecture.
+- Provide a publicly accessible HTTPS frontend.
 
 ---
 
@@ -56,44 +63,75 @@ The backend is implemented using AWS Lambda and Amazon API Gateway, with Amazon 
 
 | Feature | Description |
 |---|---|
-| Authentication | Secure sign-in using Amazon Cognito |
-| Course Creation | Create courses with titles, descriptions, video URLs, and passing scores |
-| Course Assignment | Assign training by employee ID or eligible role |
-| Email Notification | Send course assignment emails through Amazon SES |
-| Quiz Management | Create MCQ questions through the HR interface |
-| Progress Dashboard | View employees, courses, assignments, and completion metrics |
-| Skill Matrix | Measure department-level mandatory training completion |
-| Overdue Tracking | Identify overdue assignments |
-| Weekly Alerts | Scheduled overdue notifications through Amazon SNS |
+| Secure Login | Cognito authentication with HR authorization |
+| Course Creation | Add course title, description, training video and passing score |
+| Eligible Roles | Specify employee roles for each course |
+| Course Assignment | Assign training to individual employees or by role |
+| Email Notifications | Notify employees about assignments through Amazon SES |
+| Quiz Authoring | Create four-option multiple-choice questions |
+| HR Dashboard | View course assignments and completion metrics |
+| Skill Matrix | Monitor department-level training completion |
+| Overdue Tracking | Identify employees with overdue training |
+| Scheduled Alerts | Weekly overdue checks using EventBridge and SNS |
 
 ### 👨‍💻 Employee Learning Portal
 
 | Feature | Description |
 |---|---|
-| Personal Dashboard | View assigned courses and deadlines |
-| Learning Videos | Open course-related YouTube or Vimeo resources |
-| MCQ Assessments | Take quizzes with four-option questions |
-| Server-Side Grading | Receive scores calculated by AWS Lambda |
-| Attempt Limits | Maximum of three attempts per course |
-| Progress Tracking | Review completion status and quiz scores |
-| PDF Certificates | Download certificates for passed courses |
-| Public Verification | Validate certificates using a unique certificate ID |
+| Secure Login | Cognito authentication with Employee authorization |
+| Learning Dashboard | View assigned courses and due dates |
+| Video Training | Open external learning videos |
+| MCQ Assessments | Complete interactive quizzes |
+| Automatic Grading | Receive scores computed by AWS Lambda |
+| Attempt Restriction | Maximum three attempts, enforced server-side |
+| Completion Tracking | View course status and quiz scores |
+| PDF Certificates | Download generated completion certificates |
+| Certificate Verification | Verify a certificate using its unique identifier |
+
+---
+
+## 🌍 Live Website & Deployment
+
+### Public Frontend
+
+**AWS Amplify Hosting URL:**
+
+https://master.da06iuy3xqk98.amplifyapp.com
+
+The frontend is deployed from this repository's `master` branch.
+
+**Amplify build configuration:** `amplify.yml`
+
+The React application is located in the `frontend/` directory.
+
+### Existing AWS Backend
+
+**AWS Region:** `ap-south-1` (Mumbai)
+
+**AWS SAM Stack:** `skilltrack-lms`
+
+**API Gateway Base URL:**
+
+https://hmp7xht4bf.execute-api.ap-south-1.amazonaws.com
+
+The publicly hosted frontend connects to the existing AWS API Gateway and Lambda backend.
+
+**Deployment verification note:** The Amplify hosting URL has been created. API Gateway CORS must include the Amplify HTTPS origin, and public-site authentication should be tested separately before marking the live deployment fully verified.
 
 ---
 
 ## 🏗 System Architecture
 
-SkillTrack follows an event-driven, serverless architecture.
-
 ```mermaid
 flowchart TD
-    HR["HR Administrator"]
-    EMP["Employee"]
+    HR["👩‍💼 HR Administrator"]
+    EMP["👨‍💻 Employee"]
 
-    UI["React + TypeScript Frontend"]
+    AMP["🌐 AWS Amplify Hosting"]
+    UI["React + TypeScript"]
     AUTH["Amazon Cognito"]
-    API["Amazon API Gateway HTTP API"]
-    LAMBDA["AWS Lambda"]
+    API["API Gateway HTTP API"]
+    LAMBDA["AWS Lambda / Python"]
 
     DB[("Amazon DynamoDB")]
     S3[("Private Amazon S3")]
@@ -101,12 +139,16 @@ flowchart TD
     SNS["Amazon SNS"]
     EVENT["EventBridge Scheduler"]
 
-    HR --> UI
-    EMP --> UI
+    GH["GitHub Repository"]
+    CI["GitHub Actions"]
 
+    HR --> AMP
+    EMP --> AMP
+
+    AMP --> UI
     UI --> AUTH
-    UI -->|"Bearer access token"| API
-    AUTH -.->|"JWT verification"| API
+    UI -->|"JWT access token"| API
+    AUTH -. "JWT validation" .-> API
     API --> LAMBDA
 
     LAMBDA --> DB
@@ -115,49 +157,79 @@ flowchart TD
 
     EVENT -->|"Weekly trigger"| LAMBDA
     LAMBDA --> SNS
+
+    GH --> CI
+    GH -->|"Automatic frontend build"| AMP
 ```
 
-### 🔍 Architecture Explanation
+### AWS Services and Responsibilities
 
-| AWS Service | Responsibility |
+| AWS Service | Purpose |
 |---|---|
-| Amazon Cognito | Authenticates HR administrators and employees |
-| API Gateway | Exposes JWT-protected HTTP endpoints |
-| AWS Lambda | Executes application business logic |
-| DynamoDB | Stores employees, courses, quizzes, assignments, completions, and certificates |
-| Amazon S3 | Stores generated PDF certificates privately |
-| Amazon SES | Sends assignment and certificate notifications |
-| Amazon SNS | Sends overdue-training alerts to subscribed HR recipients |
-| EventBridge Scheduler | Triggers weekly overdue checks |
-| AWS SAM | Defines and deploys serverless infrastructure |
+| Amplify Hosting | Publicly hosts the React website over HTTPS |
+| Amazon Cognito | Authenticates employees and HR administrators |
+| API Gateway | Exposes protected backend HTTP endpoints |
+| AWS Lambda | Runs serverless application logic |
+| DynamoDB | Stores employees, courses, assignments, quizzes and results |
+| Amazon S3 | Stores private PDF certificates |
+| Amazon SES | Sends course and certificate emails |
+| Amazon SNS | Publishes overdue-training alerts |
+| EventBridge Scheduler | Triggers scheduled overdue checks |
+| AWS SAM | Defines backend infrastructure as code |
 
 ---
 
-## 🔄 Complete Learning Workflow
+## 🧠 What Is AWS Lambda in SkillTrack?
+
+AWS Lambda is the serverless compute service responsible for executing Python backend functions.
+
+When users interact with SkillTrack, React makes an HTTP request to API Gateway. API Gateway verifies the request's JWT and invokes the appropriate Lambda function.
+
+### Lambda Functions
+
+| Function | Responsibility |
+|---|---|
+| `create_course` | Creates new training courses |
+| `assign_course` | Assigns training and requests email notifications |
+| `add_quiz_questions` | Saves new quiz questions and answer hashes |
+| `get_quiz` | Retrieves employee-facing quiz questions |
+| `submit_quiz` | Validates answers, grades quizzes and enforces attempt limits |
+| `my_assignments` | Returns the signed-in employee's courses |
+| `hr_dashboard` | Aggregates HR training metrics |
+| `generate_certificate` | Creates and stores PDF certificates |
+| `download_certificate` | Issues secure, temporary certificate download URLs |
+| `verify_certificate` | Verifies certificate authenticity |
+| `overdue_alerts` | Checks overdue training and publishes HR notifications |
+
+Lambda eliminates the need to manage application servers directly.
+
+---
+
+## 🔄 End-to-End Learning Workflow
 
 ```mermaid
 flowchart TD
-    A["HR logs in"] --> B["Create course"]
-    B --> C["Add MCQ questions"]
-    C --> D["Assign training"]
-    D --> E["Employee receives email"]
-    E --> F["Employee logs in"]
-    F --> G["Access training video"]
-    G --> H["Submit quiz"]
+    A["HR Login"] --> B["Create Course"]
+    B --> C["Add MCQ Questions"]
+    C --> D["Assign Training"]
+    D --> E["SES Notification"]
+    E --> F["Employee Login"]
+    F --> G["Watch Training Video"]
+    G --> H["Submit Quiz"]
 
-    H --> I{"Passing score reached?"}
+    H --> I{"Passed?"}
 
-    I -->|"No"| J{"Attempts remaining?"}
+    I -->|"No"| J{"Attempts Left?"}
     J -->|"Yes"| H
-    J -->|"No"| K["Further attempts blocked"]
+    J -->|"No"| K["Quiz Locked"]
 
-    I -->|"Yes"| L["Save completion"]
-    L --> M["Generate PDF certificate"]
-    M --> N["Store PDF in private S3"]
-    N --> O["Download certificate"]
-    O --> P["Public certificate verification"]
+    I -->|"Yes"| L["Completion Recorded"]
+    L --> M["Generate PDF Certificate"]
+    M --> N["Store in Private S3"]
+    N --> O["Employee Downloads PDF"]
+    O --> P["Certificate Verification"]
 
-    D --> Q["HR dashboard"]
+    D --> Q["HR Dashboard"]
     L --> Q
 ```
 
@@ -168,83 +240,76 @@ flowchart TD
 | Layer | Technology |
 |---|---|
 | Frontend | React, TypeScript, Vite |
+| Public Hosting | AWS Amplify Hosting |
 | Authentication | Amazon Cognito |
-| HTTP API | Amazon API Gateway |
+| API | Amazon API Gateway HTTP API |
 | Backend | AWS Lambda, Python 3.14 |
 | Database | Amazon DynamoDB |
-| Certificate Storage | Amazon S3 |
-| PDF Generation | Python ReportLab |
-| Email Delivery | Amazon SES |
-| Notifications | Amazon SNS |
-| Scheduling | Amazon EventBridge Scheduler |
-| Infrastructure as Code | AWS SAM / CloudFormation |
-| Version Control | Git and GitHub |
-| Continuous Integration | GitHub Actions |
-
-**AWS Region:** `ap-south-1` (Mumbai)
+| File Storage | Amazon S3 |
+| PDF Generation | ReportLab |
+| Assignment Emails | Amazon SES |
+| Overdue Notifications | Amazon SNS |
+| Scheduler | Amazon EventBridge Scheduler |
+| Infrastructure | AWS SAM / CloudFormation |
+| Source Control | Git / GitHub |
+| CI | GitHub Actions |
 
 ---
 
-## 🔐 Authentication and Role-Based Authorization
+## 🔐 Authentication & Role-Based Security
 
-SkillTrack provides two user roles:
+SkillTrack supports two Cognito application groups.
 
-| Role | Permissions |
+| Group | Access |
 |---|---|
-| `HR_ADMIN` | Create courses, assign training, add quiz questions, view HR analytics |
-| `EMPLOYEE` | View assigned courses, take quizzes, download personal certificates |
+| `HR_ADMIN` | Course creation, assignment, quiz management and analytics |
+| `EMPLOYEE` | Learning dashboard, quiz submissions and personal certificates |
 
-Amazon Cognito issues access tokens after successful authentication.
+Protected routes validate Cognito access tokens through API Gateway.
 
-API Gateway validates JWTs for protected routes. Lambda functions additionally check the required Cognito group before processing sensitive operations.
+Lambda functions perform additional role and identity checks.
 
-Certificate download requests identify the employee from the verified Cognito subject rather than trusting an employee ID supplied by the browser.
+The certificate download endpoint identifies employees through the authenticated Cognito subject, preventing users from requesting another employee's certificate by simply changing an ID.
 
 <details>
-<summary><strong>🔎 Why use Cognito and JWT authorization?</strong></summary>
+<summary><strong>🔎 How JWT Authorization Works</strong></summary>
 
-Cognito provides managed authentication without requiring the application to store user passwords.
-
-JWT authorization allows the API to verify authenticated requests. Backend role checks provide an additional authorization layer for HR-only and employee-specific operations.
+1. The user signs in with Amazon Cognito.
+2. Cognito issues authentication tokens.
+3. React sends the access token with protected API requests.
+4. API Gateway validates the JWT.
+5. Lambda verifies the required application role.
+6. The authorized request is processed.
 
 </details>
 
 ---
 
-## 📚 Course Creation and Assignment
+## 📚 Course Creation and Training Assignment
 
-HR administrators can create courses containing:
+HR administrators create courses containing:
 
-- A generated course ID
-- Course title
-- Description
-- HTTPS YouTube or Vimeo training video
+- Unique course ID
+- Title and description
+- HTTPS YouTube or Vimeo video URL
 - Passing score
 - Eligible employee roles
 
-Training can be assigned to specific employee IDs or to employees matching an eligible role.
+Training can be assigned either to specific employee IDs or by an eligible employee role.
 
-Each assignment includes a course ID, employee ID, assignment timestamp, due date, status, and email notification status.
+Assignments store the employee, course, assignment date, deadline, status and email notification status.
 
-Duplicate assignment requests do not overwrite existing assignment records.
+Duplicate assignment attempts do not overwrite existing assignment records.
 
 ---
 
-## 📝 Secure Quiz Management
+## 📝 Quiz Management and Secure Grading
 
-Quiz questions are stored in DynamoDB and delivered through protected employee endpoints.
+Quiz questions are stored in DynamoDB with four possible answers.
 
-Each question includes:
-
-- Course ID
-- Question ID
-- Question text
-- Four answer options
-- Correct-answer hash
+The backend does not expose the correct-answer hash through the employee quiz endpoint.
 
 ### Answer Hashing
-
-Correct answers are normalized and hashed by the backend:
 
 ```python
 import hashlib
@@ -256,142 +321,118 @@ answer_hash = hashlib.sha256(
 ).hexdigest()
 ```
 
-The employee quiz API does not expose correct-answer hashes.
-
 ### Quiz Rules
 
 | Rule | Implementation |
 |---|---|
-| Quiz access | Authenticated employee endpoint |
-| Answer validation | Backend verifies submitted questions and choices |
-| Grading | Performed by AWS Lambda |
-| Passing threshold | Configurable for each course |
-| Attempt limit | Three attempts |
-| Passed quizzes | Further submissions blocked |
+| Quiz Access | Authenticated employee API |
+| Question Options | Four options per question |
+| Correct Answer | Stored as SHA-256 hash |
+| Grading | Server-side Lambda |
+| Passing Score | Defined per course |
+| Maximum Attempts | Three |
+| Passed Course | Further submissions blocked |
 | Results | Stored in DynamoDB |
 
 <details>
-<summary><strong>🛡 Expand: Why enforce attempt limits on the backend?</strong></summary>
+<summary><strong>🛡️ Why enforce grading on the backend?</strong></summary>
 
-Frontend restrictions alone can be bypassed through direct HTTP requests.
+Frontend validation can be bypassed.
 
-SkillTrack enforces quiz attempt limits using Lambda and conditional DynamoDB updates, so the backend controls whether a submission is accepted.
+The backend verifies submitted questions and answer options, computes grades and uses conditional DynamoDB operations to enforce completion and attempt restrictions.
 
-Correct-answer hashing reduces accidental answer exposure, although SHA-256 does not prevent guessing from a small set of known options. Strong API authorization is still necessary.
+SHA-256 protects against direct plaintext answer exposure but is not encryption and cannot prevent guessing from a small known option set.
 
 </details>
 
 ---
 
-## 🏅 Automated PDF Certificates
+## 🏅 Automated PDF Certificate Generation
 
-When an employee passes a quiz, the system records the completion and invokes a certificate-generation Lambda.
+After a passing quiz result:
 
-```mermaid
-sequenceDiagram
-    participant EMP as Employee
-    participant API as API Gateway
-    participant QUIZ as Quiz Lambda
-    participant DB as DynamoDB
-    participant CERT as Certificate Lambda
-    participant S3 as Private S3
-    participant SES as Amazon SES
+1. The completion is recorded in DynamoDB.
+2. The certificate Lambda generates a PDF.
+3. The PDF is uploaded to a private S3 bucket.
+4. Certificate metadata is saved.
+5. Amazon SES sends a certificate notification.
+6. The employee can request a temporary download URL.
+7. The unique certificate ID can be publicly verified.
 
-    EMP->>API: Submit quiz answers
-    API->>QUIZ: Authorized request
-    QUIZ->>DB: Save passing result
-    QUIZ-->>EMP: Return quiz score
-    QUIZ->>CERT: Invoke certificate generation
-    CERT->>S3: Upload certificate PDF
-    CERT->>DB: Save certificate metadata
-    CERT->>SES: Send certificate notification
-    EMP->>API: Request secure download
-    API-->>EMP: Temporary S3 download URL
-```
-
-The PDF contains the employee's name, course, completion date, and unique certificate ID.
-
-S3 object keys follow this structure:
+### Certificate Storage
 
 ```text
 certificates/{employee_id}/{course_id}.pdf
 ```
 
-### 🔒 Secure Download
+### Secure Download
 
-The certificate download API checks:
+The download Lambda confirms the signed-in employee owns a passing completion record before issuing a presigned S3 URL.
 
-1. The user has a valid employee access token.
-2. The employee identity matches the Cognito subject.
-3. The employee has passed the requested course.
-4. The corresponding PDF exists in the private S3 bucket.
+**Download link lifetime:** 15 minutes.
 
-The API then generates a **15-minute presigned S3 URL**.
-
-### ✅ Public Verification
-
-Certificates can be checked using:
+### Certificate Verification
 
 ```http
 GET /verify/{cert_id}
 ```
 
-Verification is public. Downloading the actual PDF requires employee authentication.
+Public verification does not expose the private PDF object itself.
 
 ---
 
-## 📊 HR Dashboard and Skill Completion Matrix
+## 📊 HR Analytics and Skill Matrix
 
-The HR dashboard provides an overview of learning activity.
-
-It displays:
+The HR dashboard displays:
 
 - Total employees
 - Total courses
 - Total assignments
-- Completed courses
-- Overdue assignments
-- Employee training status
-- Department-level skill completion percentages
+- Completed training
+- Overdue training
+- Employee learning progress
+- Department skill completion percentages
 
-Overdue training is visually highlighted so HR can identify employees requiring follow-up.
+Overdue assignments are visually highlighted.
 
 ---
 
-## 📩 Scheduled Overdue Training Alerts
+## 📩 Weekly Overdue Training Alerts
 
-An EventBridge schedule invokes the overdue-training Lambda weekly.
+EventBridge Scheduler invokes the overdue-alert Lambda.
+
+The Lambda evaluates training deadlines and sends overdue information through Amazon SNS.
 
 ```mermaid
 flowchart LR
-    A["EventBridge Scheduler"] --> B["Overdue Alert Lambda"]
-    B --> C["DynamoDB Records"]
+    A["EventBridge Scheduler"] --> B["Overdue Lambda"]
+    B --> C["DynamoDB"]
     B --> D["Amazon SNS"]
     D --> E["HR Email"]
 ```
 
-**Scheduled frequency:** Every Monday at 9:00 AM, Asia/Kolkata.
+**Schedule:** Monday, 9:00 AM, Asia/Kolkata.
 
-The overdue-alert Lambda has been manually invoked successfully. The first scheduled execution should be verified separately after its scheduled time.
+The Lambda has been manually tested. The first automatically scheduled execution should be verified separately.
 
 ---
 
 ## 🗄 DynamoDB Tables
 
-| Table | Purpose |
+| Table | Stores |
 |---|---|
-| `skilltrack-employees` | Employee profile and Cognito identity mapping |
-| `skilltrack-courses` | Course metadata |
-| `skilltrack-assignments` | Assignments and deadlines |
-| `skilltrack-quizzes` | Quiz questions and answer hashes |
-| `skilltrack-completions` | Quiz attempts, scores, and completion status |
+| `skilltrack-employees` | Employee profiles and Cognito identity mappings |
+| `skilltrack-courses` | Course information |
+| `skilltrack-assignments` | Training assignments and deadlines |
+| `skilltrack-quizzes` | Questions and answer hashes |
+| `skilltrack-completions` | Attempts, scores and completion records |
 | `skilltrack-certificates` | Certificate identifiers and metadata |
 
 ---
 
 ## 🌐 API Reference
 
-**Base URL**
+**API Gateway Base URL**
 
 ```text
 https://hmp7xht4bf.execute-api.ap-south-1.amazonaws.com
@@ -399,15 +440,15 @@ https://hmp7xht4bf.execute-api.ap-south-1.amazonaws.com
 
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
-| POST | `/courses` | HR Admin | Create a course |
+| POST | `/courses` | HR Admin | Create course |
 | POST | `/assignments` | HR Admin | Assign training |
-| POST | `/courses/{course_id}/questions` | HR Admin | Add quiz question |
-| GET | `/hr/dashboard` | HR Admin | Retrieve HR analytics |
-| GET | `/me/assignments` | Employee | Retrieve assigned courses |
-| GET | `/courses/{course_id}/quiz` | Employee | Retrieve MCQ questions |
-| POST | `/courses/{course_id}/submit` | Employee | Submit and grade quiz |
-| GET | `/me/certificates/{course_id}/download` | Employee | Request secure PDF link |
-| GET | `/verify/{cert_id}` | Public | Verify certificate |
+| POST | `/courses/{course_id}/questions` | HR Admin | Create MCQ question |
+| GET | `/hr/dashboard` | HR Admin | HR metrics and skill matrix |
+| GET | `/me/assignments` | Employee | Employee dashboard data |
+| GET | `/courses/{course_id}/quiz` | Employee | Fetch quiz questions |
+| POST | `/courses/{course_id}/submit` | Employee | Grade quiz |
+| GET | `/me/certificates/{course_id}/download` | Employee | Secure PDF link |
+| GET | `/verify/{cert_id}` | Public | Certificate verification |
 
 <details>
 <summary><strong>📤 Example: Create Course</strong></summary>
@@ -415,7 +456,7 @@ https://hmp7xht4bf.execute-api.ap-south-1.amazonaws.com
 ```json
 {
   "title": "AWS Cloud Security",
-  "description": "Introduction to AWS cloud security principles",
+  "description": "Introduction to AWS cloud security concepts",
   "external_video_url": "https://www.youtube.com/watch?v=VIDEO_ID",
   "passing_score": 80,
   "assigned_roles": ["Developer", "DevOps"]
@@ -425,7 +466,7 @@ https://hmp7xht4bf.execute-api.ap-south-1.amazonaws.com
 </details>
 
 <details>
-<summary><strong>📤 Example: Assign Employees</strong></summary>
+<summary><strong>📤 Example: Assign Training</strong></summary>
 
 ```json
 {
@@ -438,7 +479,7 @@ https://hmp7xht4bf.execute-api.ap-south-1.amazonaws.com
 </details>
 
 <details>
-<summary><strong>📤 Example: Submit Quiz</strong></summary>
+<summary><strong>📤 Example: Quiz Submission</strong></summary>
 
 ```json
 {
@@ -457,14 +498,14 @@ https://hmp7xht4bf.execute-api.ap-south-1.amazonaws.com
 
 ## 📸 Application Screenshots
 
-The following seven screenshots demonstrate the SkillTrack application and project repository.
+Seven screenshots demonstrate the completed core application.
 
 <details open>
 <summary><strong>🏠 1. SkillTrack Login Page</strong></summary>
 
 ![SkillTrack Login](screenshots/1.%20Login%20Page.png)
 
-**Description:** The SkillTrack entry page offers separate HR administrator and employee sign-in flows.
+**Description:** Role-based entry and authentication interface.
 
 </details>
 
@@ -473,7 +514,7 @@ The following seven screenshots demonstrate the SkillTrack application and proje
 
 ![HR Dashboard](screenshots/2.%20Hr%20Dashboard%20%26%20Skill%20Completion%20Matrix.png)
 
-**Description:** HR training metrics, employee status, overdue tracking, and departmental skill completion percentages.
+**Description:** HR statistics, employee progress, overdue assignments and department skill percentages.
 
 </details>
 
@@ -482,7 +523,7 @@ The following seven screenshots demonstrate the SkillTrack application and proje
 
 ![Course Management](screenshots/3.%20Course%20Management.png)
 
-**Description:** HR course creation and training assignment forms.
+**Description:** HR course creation and employee assignment forms.
 
 </details>
 
@@ -491,7 +532,7 @@ The following seven screenshots demonstrate the SkillTrack application and proje
 
 ![Quiz Management](screenshots/4.%20Quiz%20Management.png)
 
-**Description:** Multiple-choice question creation, answer options, and correct-answer selection.
+**Description:** HR multiple-choice quiz authoring interface.
 
 </details>
 
@@ -500,7 +541,7 @@ The following seven screenshots demonstrate the SkillTrack application and proje
 
 ![Employee Dashboard](screenshots/5.%20Employee%20Dashboard%20%26%20Quiz%20Results.png)
 
-**Description:** Employee assignments, course progress, quiz results, and certificate actions.
+**Description:** Assigned courses, quiz status, scores and certificate actions.
 
 </details>
 
@@ -509,16 +550,16 @@ The following seven screenshots demonstrate the SkillTrack application and proje
 
 ![GitHub Repository](screenshots/6.%20GitHub%20.png)
 
-**Description:** Project source code, frontend, backend, infrastructure and repository documentation.
+**Description:** Source code, backend, frontend, infrastructure and documentation.
 
 </details>
 
 <details>
 <summary><strong>🏅 7. Generated PDF Certificate</strong></summary>
 
-![PDF Certificate](screenshots/7.%20Certificate.png)
+![Certificate](screenshots/7.%20Certificate.png)
 
-**Description:** Downloadable training completion certificate generated by AWS Lambda and stored privately in S3.
+**Description:** Generated employee learning completion certificate.
 
 </details>
 
@@ -555,11 +596,12 @@ employee-learning-skill-tracker/
 │   │   ├── HrQuizManagement.tsx
 │   │   ├── EmployeeDashboard.tsx
 │   │   └── QuizPage.tsx
-│   ├── package.json
-│   └── vite.config.ts
+│   └── package.json
 │
-├── scripts/
 ├── screenshots/
+│   └── Seven demonstration images
+│
+├── amplify.yml
 ├── template.yaml
 ├── .gitignore
 └── README.md
@@ -576,16 +618,14 @@ employee-learning-skill-tracker/
 - AWS CLI
 - AWS SAM CLI
 - Git
-- AWS account with permissions for the required services
+- AWS account
 
-### 1. Clone the Project
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/SubhashiniRajamani/employee-learning-skill-tracker.git
 cd employee-learning-skill-tracker
 ```
-
-If the GitHub default branch differs, select the branch containing the latest application code.
 
 ### 2. Install Frontend Dependencies
 
@@ -594,7 +634,7 @@ cd frontend
 npm ci
 ```
 
-### 3. Run the React Frontend
+### 3. Run Locally
 
 ```bash
 npm run dev
@@ -602,17 +642,17 @@ npm run dev
 
 Open:
 
-**http://localhost:5173/**
+http://localhost:5173/
 
-The frontend currently uses the deployed SkillTrack AWS API and Cognito configuration. A separate deployment needs its own configuration values.
+The local frontend uses the configured AWS API endpoint and Cognito user pool.
 
-### 4. Build React
+### 4. Build the Frontend
 
 ```bash
 npm run build
 ```
 
-### 5. Validate Python and SAM
+### 5. Validate the Backend
 
 From the project root:
 
@@ -621,138 +661,174 @@ python -m compileall -q backend
 sam validate --lint
 ```
 
-### 6. Deploy the Backend
+### 6. Build and Deploy the Backend
 
 ```bash
 sam build
 sam deploy --guided
 ```
 
-Deployment requires correctly configured AWS credentials and permissions.
-
-Cognito test accounts, SES verification, SNS email subscriptions, and sample DynamoDB data must be provisioned separately where applicable.
+AWS credentials, permissions, SES verification, Cognito users, SNS subscriptions and demo data require their own configuration.
 
 ---
 
-## 🔁 GitHub Actions — Continuous Integration
+## ☁️ AWS Amplify Hosting
 
-GitHub Actions configuration:
+The React frontend is configured for AWS Amplify Hosting using the root-level `amplify.yml`.
+
+<details>
+<summary><strong>🚀 Expand: Amplify Deployment Process</strong></summary>
+
+1. Push the project to GitHub.
+2. Open AWS Amplify Console.
+3. Connect the GitHub repository.
+4. Select the `master` branch.
+5. Configure the monorepo app root as `frontend`.
+6. Use `npm ci` to install dependencies.
+7. Use `npm run build` to build the website.
+8. Publish the Vite `dist` output directory.
+9. Configure the Amplify HTTPS domain in API Gateway CORS.
+10. Verify authentication and protected API requests.
+
+Public website:
+
+https://master.da06iuy3xqk98.amplifyapp.com
+
+</details>
+
+### Amplify Build Settings
+
+| Setting | Value |
+|---|---|
+| Repository | `SubhashiniRajamani/employee-learning-skill-tracker` |
+| Branch | `master` |
+| App Root | `frontend` |
+| Install | `npm ci` |
+| Build | `npm run build` |
+| Output | `dist` |
+
+---
+
+## 🔁 Continuous Integration
+
+GitHub Actions runs automated checks from:
 
 ```text
 .github/workflows/ci.yml
 ```
 
-The CI workflow performs:
-
-| Job | Check |
+| Job | Description |
 |---|---|
-| React Frontend Build | Install npm dependencies and compile the production frontend |
-| Python Backend Checks | Validate Python source syntax |
-
-The workflow runs on pushes and pull requests.
-
-**Note:** CI does not automatically deploy the application to AWS. Check the repository's Actions tab for the latest run results.
+| React Frontend Build | Installs dependencies and builds the frontend |
+| Python Backend Checks | Validates Python backend syntax |
 
 [View GitHub Actions](https://github.com/SubhashiniRajamani/employee-learning-skill-tracker/actions)
 
+The CI workflow does not automatically deploy the AWS Lambda backend.
+
+Amplify Hosting separately builds and deploys the frontend from the connected GitHub branch.
+
 ---
 
-## 🧪 Testing and Demonstration
+## 🧪 Testing and Validation
 
-The application has been exercised with a demo dataset containing five employees and multiple courses.
+The core application has been tested using demonstration data.
 
-### Validated Scenarios
-
-| Scenario | Status |
+| Test Scenario | Status |
 |---|---|
-| HR course creation | Tested |
-| Individual course assignment | Tested |
+| HR authentication | Tested |
+| Employee authentication | Tested |
+| Course creation | Tested |
+| Employee assignment | Tested |
 | SES assignment notification | Tested |
-| HR quiz question creation | Tested |
-| Employee quiz submission | Tested |
-| Server-side scoring | Tested |
-| Three-attempt restriction | Tested |
-| PDF certificate generation | Tested |
-| Secure certificate download | Tested |
+| Quiz question management | Tested |
+| Quiz grading | Tested |
+| Three-attempt limit | Tested |
+| Certificate PDF generation | Tested |
+| Certificate download | Tested |
 | Certificate verification | Tested |
-| HR dashboard display | Tested |
-| Manual overdue alert invocation | Tested |
+| HR dashboard | Tested |
+| Manual overdue notification | Tested |
+| GitHub Actions | Successful |
+| Amplify frontend deployment | URL created |
+| Public frontend end-to-end testing | Pending final verification |
 | First scheduled weekly alert | Pending scheduled execution |
 
-### 🎬 Suggested Demo Walkthrough
+---
 
-1. Show the SkillTrack login page.
-2. Sign in as an HR administrator.
-3. Explain the HR Dashboard and Skill Completion Matrix.
-4. Demonstrate course creation.
-5. Show quiz question management.
-6. Assign a course to an employee.
-7. Sign in using the employee portal.
-8. Show assigned courses and quiz functionality.
-9. Open a passed course's certificate.
+## 🎬 Demonstration Guide
+
+1. Open the live SkillTrack website.
+2. Sign in as HR Administrator.
+3. Display the HR Dashboard.
+4. Explain the Department Skill Completion Matrix.
+5. Demonstrate course creation and assignment.
+6. Show the MCQ question management interface.
+7. Sign out and sign in as an employee.
+8. Display assigned training and quiz results.
+9. Download a previously generated PDF certificate.
 10. Demonstrate certificate verification.
-11. Show the GitHub repository and CI workflow.
+11. Show the project repository and GitHub Actions.
+
+**Note:** Complete the public website CORS configuration and test authenticated API requests before conducting the live demonstration.
 
 ---
 
-## 🛡️ Security and Limitations
+## 🛡️ Security
 
-### Security Controls
+Security controls include:
 
 - Cognito-managed authentication
 - JWT authorization at API Gateway
-- Lambda role-based authorization checks
-- Server-side grading
-- DynamoDB-enforced quiz attempt limits
-- Private S3 certificate storage
-- Employee ownership checks for certificate downloads
-- Short-lived S3 presigned URLs
-- IAM permissions for AWS service access
+- Backend role checks
+- Server-side quiz grading
+- DynamoDB-enforced attempt limits
+- Private certificate S3 bucket
+- Certificate ownership verification
+- Short-lived download URLs
+- Scoped Lambda IAM policies
+- Git ignore rules for local credentials
 
 ### Known Limitations
 
-This project is a functional demonstration, not a fully hardened enterprise LMS.
-
-Improvements for production use include:
-
-- Preventing quiz modification after employee attempts begin
-- Stronger answer-security mechanisms
-- Automated API integration tests
-- Pagination and efficient DynamoDB access patterns
-- Improved logging and monitoring
-- Public frontend hosting
-- Expanded accessibility testing
+- Quiz content should be locked or versioned after attempts begin.
+- SHA-256 answer hashing is not equivalent to encryption.
+- Additional automated integration tests are needed.
+- DynamoDB access patterns can be optimized for larger datasets.
+- Public-site end-to-end verification is required after CORS deployment.
+- The first weekly scheduled alert has not yet been independently verified.
 
 ---
 
 ## 🚀 Future Enhancements
 
-- AWS Amplify Hosting
-- Automated deployment pipeline
-- Course editing and archiving
-- Versioned quizzes
-- Searchable course catalog
-- Exportable HR reports
-- Enhanced employee skill analytics
-- Larger-scale performance testing
+- Custom domain for the live website
+- Quiz versioning and lifecycle controls
+- Richer HR analytics and reporting
+- CSV exports
+- Automated backend deployment
+- Advanced monitoring and audit logs
+- Searchable training catalog
+- Improved accessibility and responsive design
 
 ---
 
-## 📌 Project Details
+## 📌 Project Information
 
 | Property | Value |
 |---|---|
-| Project Name | SkillTrack |
-| Domain | Employee Learning and Certification |
+| Project | SkillTrack |
+| Category | Employee Learning and Skill Certification |
 | Architecture | AWS Serverless |
-| AWS Region | `ap-south-1` |
-| Stack Name | `skilltrack-lms` |
 | Frontend | React + TypeScript |
+| Public Hosting | AWS Amplify Hosting |
 | Backend | Python + AWS Lambda |
 | Database | DynamoDB |
-| Certificate Storage | Amazon S3 |
-| Repository | [GitHub](https://github.com/SubhashiniRajamani/employee-learning-skill-tracker) |
-| Project Status | Core features implemented and tested |
+| Storage | Private S3 |
+| AWS Region | `ap-south-1` |
+| SAM Stack | `skilltrack-lms` |
+| GitHub | [Source Repository](https://github.com/SubhashiniRajamani/employee-learning-skill-tracker) |
+| Website | [Live SkillTrack](https://master.da06iuy3xqk98.amplifyapp.com) |
 
 ---
 
@@ -770,7 +846,7 @@ GitHub: [@SubhashiniRajamani](https://github.com/SubhashiniRajamani)
 
 **Learn • Assess • Certify • Grow**
 
-Built using React, TypeScript, Python, and AWS Serverless.
+Built with React, TypeScript, Python and AWS Serverless.
 
 [⬆ Back to Top](#-skilltrack)
 
