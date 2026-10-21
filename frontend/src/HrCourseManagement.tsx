@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchAuthSession } from "aws-amplify/auth";
 import "./HrCourseManagement.css";
 import HrQuizManagement from "./HrQuizManagement";
@@ -42,6 +41,37 @@ async function postToApi(
   return data;
 }
 
+type CourseSummary = {
+  course_id: string;
+  title: string;
+  passing_score: number;
+};
+
+async function getCourses(): Promise<CourseSummary[]> {
+  const session = await fetchAuthSession();
+  const token = session.tokens?.accessToken?.toString();
+
+  if (!token) {
+    throw new Error("Session expired. Please sign in again.");
+  }
+
+  const response = await fetch(`${API_URL}/courses`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || data.message || "Unable to load courses."
+    );
+  }
+
+  return data.courses ?? [];
+}
+
 export default function HrCourseManagement({ onChanged }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -50,6 +80,28 @@ export default function HrCourseManagement({ onChanged }: Props) {
   const [assignedRoles, setAssignedRoles] = useState("");
 
   const [createdCourseId, setCreatedCourseId] = useState("");
+
+  const [courses, setCourses] = useState<CourseSummary[]>([]);
+  const [coursesError, setCoursesError] = useState("");
+
+  async function loadCourses() {
+    try {
+      setCoursesError("");
+      const items = await getCourses();
+      setCourses(items);
+    } catch (error) {
+      setCoursesError(
+        error instanceof Error
+          ? error.message
+          : "Unable to load courses."
+      );
+    }
+  }
+
+  useEffect(() => {
+    void loadCourses();
+  }, []);
+
 
   const [assignCourseId, setAssignCourseId] = useState("");
   const [assignmentType, setAssignmentType] =
@@ -101,7 +153,7 @@ export default function HrCourseManagement({ onChanged }: Props) {
       setVideoUrl("");
       setPassingScore("80");
       setAssignedRoles("");
-
+      await loadCourses();
       onChanged?.();
     } catch (error) {
       setCourseError(
@@ -372,6 +424,68 @@ export default function HrCourseManagement({ onChanged }: Props) {
           </p>
         </section>
       </div>
+
+      <section className="hr-management-panel">
+        <h3>All Training Courses</h3>
+        <p>Select a course to use its ID for assignment.</p>
+
+        <button
+          type="button"
+          className="hr-management-secondary"
+          onClick={() => void loadCourses()}
+        >
+          Refresh Course List
+        </button>
+
+        {coursesError && (
+          <p className="hr-management-error" role="alert">
+            {coursesError}
+          </p>
+        )}
+
+        <div style={{ overflowX: "auto", marginTop: 16 }}>
+          <table style={{ width: "100%", textAlign: "left" }}>
+            <thead>
+              <tr>
+                <th>Course ID</th>
+                <th>Course Title</th>
+                <th>Passing Score</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {courses.map((course) => (
+                <tr key={course.course_id}>
+                  <td>{course.course_id}</td>
+                  <td>{course.title}</td>
+                  <td>{course.passing_score}%</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="hr-management-secondary"
+                      onClick={() => {
+                        setAssignCourseId(course.course_id);
+                        window.scrollTo({
+                          top: 0,
+                          behavior: "smooth",
+                        });
+                      }}
+                    >
+                      Use for Assignment
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {courses.length === 0 && !coursesError && (
+          <p>No courses found yet.</p>
+        )}
+      </section>
+
+
       <HrQuizManagement />
     </div>
   );

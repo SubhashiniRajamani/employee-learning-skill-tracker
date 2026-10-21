@@ -150,6 +150,30 @@ Resources:
       KeySchema:
         - AttributeName: certificate_id
           KeyType: HASH
+  
+  ListCoursesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-list-courses
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/list_courses/
+      Timeout: 15
+      MemorySize: 128
+      Environment:
+        Variables:
+          COURSES_TABLE: !Ref CoursesTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+      Events:
+        ListCoursesApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /courses
+            Method: GET
+            PayloadFormatVersion: '2.0'
 
   CreateCourseFunction:
     Type: AWS::Serverless::Function
@@ -229,6 +253,7 @@ Resources:
       CorsConfiguration:
         AllowOrigins:
           - "http://localhost:5173"
+          - "https://master.da06iuy3xqk98.amplifyapp.com"
         AllowHeaders:
           - "Authorization"
           - "Content-Type"
