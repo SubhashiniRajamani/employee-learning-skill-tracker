@@ -22,6 +22,26 @@ def response(status, data):
 
 
 def lambda_handler(event, context):
+    # Accept only authenticated HR admins through API Gateway.
+    authorizer = (
+        event.get("requestContext", {})
+        .get("authorizer", {})
+        .get("jwt", {})
+    )
+
+    claims = authorizer.get("claims", {})
+    groups = claims.get("cognito:groups", [])
+
+    if isinstance(groups, str):
+        groups = [g.strip() for g in groups.strip("[]").split(",")]
+
+    if (
+        claims.get("token_use") != "access"
+        or "HR_ADMIN" not in groups
+    ):
+        return response(403, {
+            "error": "Access denied. HR Admin only."
+        })
     try:
         body = json.loads(event.get("body") or "{}")
 

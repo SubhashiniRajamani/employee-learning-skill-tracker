@@ -29,3 +29,10 @@ credentials
 
 # Certificate/build output
 *.zip
+
+# Additional sensitive files
+*.pem
+*.key
+
+# Local AWS SAM deployment settings
+samconfig.toml

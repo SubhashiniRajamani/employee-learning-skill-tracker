@@ -9,6 +9,63 @@ Parameters:
     Description: Verified Amazon SES sender email address
 
 Resources:
+  
+  DownloadCertificateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-download-certificate
+      Runtime: python3.14
+      CodeUri: backend/download_certificate/
+      Handler: app.lambda_handler
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          COMPLETIONS_TABLE: !Ref CompletionsTable
+          CERTIFICATES_BUCKET: !Ref CertificatesBucket
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CompletionsTable
+        - S3ReadPolicy:
+            BucketName: !Ref CertificatesBucket
+      Events:
+        DownloadCertificateApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /me/certificates/{course_id}/download
+            Method: GET
+
+  
+  AddQuizQuestionsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-add-quiz-questions
+      Runtime: python3.14
+      CodeUri: backend/add_quiz_questions/
+      Handler: app.lambda_handler
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          QUIZZES_TABLE: !Ref QuizzesTable
+          COURSES_TABLE: !Ref CoursesTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref QuizzesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+      Events:
+        AddQuizQuestionsApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /courses/{course_id}/questions
+            Method: POST
+
 
   CoursesTable:
     Type: AWS::DynamoDB::Table
@@ -164,10 +221,22 @@ Resources:
       Description: Employees taking courses
       UserPoolId: !Ref SkillTrackUserPool
 
+  
   SkillTrackApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: '$default'
+      CorsConfiguration:
+        AllowOrigins:
+          - "http://localhost:5173"
+        AllowHeaders:
+          - "Authorization"
+          - "Content-Type"
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+        MaxAge: 600
       Auth:
         DefaultAuthorizer: CognitoJwtAuthorizer
         Authorizers:
@@ -179,6 +248,7 @@ Resources:
                 - PoolId: !Ref SkillTrackUserPool
               audience:
                 - !Ref SkillTrackUserPoolClient
+
 
   AssignCourseFunction:
     Type: AWS::Serverless::Function
@@ -221,6 +291,296 @@ Resources:
             Path: /assignments
             Method: POST
             PayloadFormatVersion: '2.0'
+
+  GetQuizFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-get-quiz
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/get_quiz/
+      Timeout: 15
+      MemorySize: 256
+
+      Environment:
+        Variables:
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          ASSIGNMENTS_TABLE: !Ref AssignmentsTable
+          QUIZZES_TABLE: !Ref QuizzesTable
+          COMPLETIONS_TABLE: !Ref CompletionsTable
+          COURSES_TABLE: !Ref CoursesTable
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref AssignmentsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref QuizzesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CompletionsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+
+      Events:
+        GetQuizApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /courses/{course_id}/quiz
+            Method: GET
+            PayloadFormatVersion: '2.0'
+
+
+  SubmitQuizFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-submit-quiz
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/submit_quiz/
+      Timeout: 20
+      MemorySize: 256
+
+      Environment:
+        Variables:
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          ASSIGNMENTS_TABLE: !Ref AssignmentsTable
+          QUIZZES_TABLE: !Ref QuizzesTable
+          COMPLETIONS_TABLE: !Ref CompletionsTable
+          COURSES_TABLE: !Ref CoursesTable
+          CERTIFICATE_FUNCTION_NAME: !Ref GenerateCertificateFunction
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref AssignmentsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref QuizzesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CompletionsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref AssignmentsTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - lambda:InvokeFunction
+              Resource: !GetAtt GenerateCertificateFunction.Arn
+        
+
+      Events:
+        SubmitQuizApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /courses/{course_id}/submit
+            Method: POST
+            PayloadFormatVersion: '2.0'
+
+  CertificatesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  
+  GenerateCertificateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-generate-certificate
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/generate_certificate/
+      Timeout: 30
+      MemorySize: 256
+
+      Environment:
+        Variables:
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          COURSES_TABLE: !Ref CoursesTable
+          COMPLETIONS_TABLE: !Ref CompletionsTable
+          CERTIFICATES_TABLE: !Ref CertificatesTable
+          CERTIFICATES_BUCKET: !Ref CertificatesBucket
+          SES_SENDER_EMAIL: !Ref SesSenderEmail
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CompletionsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CertificatesTable
+        - S3CrudPolicy:
+            BucketName: !Ref CertificatesBucket
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: "*"
+
+
+  VerifyCertificateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-verify-certificate
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/verify_certificate/
+      Timeout: 10
+      MemorySize: 128
+
+      Environment:
+        Variables:
+          CERTIFICATES_TABLE: !Ref CertificatesTable
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CertificatesTable
+
+      Events:
+        VerifyCertificateApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /verify/{cert_id}
+            Method: GET
+            PayloadFormatVersion: '2.0'
+            Auth:
+              Authorizer: NONE
+  
+  MyAssignmentsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-my-assignments
+      Runtime: python3.14
+      CodeUri: backend/my_assignments/
+      Handler: app.lambda_handler
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          ASSIGNMENTS_TABLE: !Ref AssignmentsTable
+          COURSES_TABLE: !Ref CoursesTable
+          COMPLETIONS_TABLE: !Ref CompletionsTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref AssignmentsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CompletionsTable
+      Events:
+        MyAssignmentsApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /me/assignments
+            Method: GET
+
+
+  HrDashboardFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-hr-dashboard
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/hr_dashboard/
+      Timeout: 20
+      MemorySize: 256
+
+      Environment:
+        Variables:
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          COURSES_TABLE: !Ref CoursesTable
+          ASSIGNMENTS_TABLE: !Ref AssignmentsTable
+          COMPLETIONS_TABLE: !Ref CompletionsTable
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref AssignmentsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CompletionsTable
+
+      Events:
+        HrDashboardApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SkillTrackApi
+            Path: /hr/dashboard
+            Method: GET
+            PayloadFormatVersion: '2.0'
+
+
+  OverdueAlertsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: skilltrack-overdue-alerts
+      Runtime: python3.14
+      Handler: app.lambda_handler
+      CodeUri: backend/overdue_alerts/
+      Timeout: 30
+      MemorySize: 256
+
+      Environment:
+        Variables:
+          ASSIGNMENTS_TABLE: !Ref AssignmentsTable
+          COMPLETIONS_TABLE: !Ref CompletionsTable
+          EMPLOYEES_TABLE: !Ref EmployeesTable
+          COURSES_TABLE: !Ref CoursesTable
+          SNS_TOPIC_ARN: arn:aws:sns:ap-south-1:322824641104:skilltrack-weekly-overdue-alerts
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref AssignmentsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CompletionsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: arn:aws:sns:ap-south-1:322824641104:skilltrack-weekly-overdue-alerts
+      
+      Events:
+        WeeklyOverdueSchedule:
+          Type: ScheduleV2
+          Properties:
+            Name: skilltrack-weekly-overdue-schedule
+            Description: Weekly overdue training report for HR
+            ScheduleExpression: "cron(0 9 ? * MON *)"
+            ScheduleExpressionTimezone: Asia/Kolkata
+            State: ENABLED
+            FlexibleTimeWindow:
+              Mode: "OFF"
+            RetryPolicy:
+              MaximumRetryAttempts: 2
+              MaximumEventAgeInSeconds: 3600
+
 
 Outputs:
   CoursesTableName:
