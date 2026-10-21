@@ -36,3 +36,5 @@ credentials
 
 # Local AWS SAM deployment settings
 samconfig.toml
+# Local Python backup
+.venv-python39-backup/
